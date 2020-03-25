@@ -1,5 +1,5 @@
 using JuMP
-using Gurobi, CPLEX
+using Gurobi#, CPLEX
 using MathOptInterface
 
 const MOI = MathOptInterface

@@ -1,5 +1,5 @@
 using JuMP
-using Gurobi, CPLEX
+using Gurobi#, CPLEX
 
 function knapsack_demcap(cap)::Function
     fixed_knapsack(tails, heads, weights, demands, adjlist, attack) = knapsack(tails, heads, weights, demands, adjlist, attack, cap)
@@ -43,7 +43,7 @@ function knapsack_mip(vals, demands, cap)
                                     "Threads" => 1,
                                     "MIPGapAbs" => 0.0,
                                     "MIPGap" => 0.0,
-                                    "OutputFlag" => 1))
+                                    "OutputFlag" => 0))
 
     # m = Model(witsolver = CplexSolver(CPXPARAM_Threads = 1,
     #                                 CPXPARAM_MIP_Tolerances_AbsMIPGap = 0,
