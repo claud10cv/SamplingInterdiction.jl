@@ -25,7 +25,3 @@ MatrixNetworks = "1.0"
 MathOptInterface = "0.9"
 Gurobi = "0.7"
 DataStructures = "0.17"
-<<<<<<< HEAD
-=======
-LightGraphsFlows = "0.4"
->>>>>>> 31d996a95c3d25a6c2cbc7c20e2045a44655c92b
