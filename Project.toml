@@ -19,3 +19,8 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 LightGraphs = "1.3"
+MatrixNetworks = "1.0"
+MathOptInterface = "0.9"
+Gurobi = "0.7"
+DataStructures = "0.17"
+LightGraphsFlows = "0.4"
