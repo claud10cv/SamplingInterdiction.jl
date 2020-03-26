@@ -167,10 +167,10 @@ uuid = "7d188eb4-7ad8-530c-ae41-71a32a6d4692"
 version = "0.2.0"
 
 [[JuMP]]
-deps = ["Calculus", "DataStructures", "ForwardDiff", "LinearAlgebra", "MathOptInterface", "MutableArithmetics", "NaNMath", "Random", "SparseArrays", "Statistics"]
-git-tree-sha1 = "8e87337fd19b6717fd9d5324bfab99848e363d9f"
+deps = ["Calculus", "DataStructures", "ForwardDiff", "LinearAlgebra", "MathOptInterface", "NaNMath", "Random", "SparseArrays", "Statistics"]
+git-tree-sha1 = "ba7f96010ed290d77d5c941c32e5df107ca688a4"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.21.1"
+version = "0.20.1"
 
 [[KahanSummation]]
 deps = ["Test"]
@@ -191,10 +191,10 @@ uuid = "093fc24a-ae57-5d10-9952-331d41423f4d"
 version = "1.3.1"
 
 [[LightGraphsFlows]]
-deps = ["LightGraphs", "LinearAlgebra", "Markdown", "MathProgBase", "SimpleTraits", "SparseArrays"]
-git-tree-sha1 = "00fa33f46a2249538bb9371022d891b48c26a92b"
+deps = ["JuMP", "LightGraphs", "LinearAlgebra", "Markdown", "SimpleTraits", "SparseArrays"]
+git-tree-sha1 = "5e15f51f811cfc02b46cbc09347073de62eda1f0"
 uuid = "2f5eb75a-258c-59e0-affc-f41c55f75335"
-version = "0.3.1"
+version = "0.4.0"
 
 [[LinearAlgebra]]
 deps = ["Libdl"]
