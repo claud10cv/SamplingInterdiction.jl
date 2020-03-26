@@ -44,6 +44,6 @@ function spp(tails, heads, weights, demands, adjlist, s, t)
 end
 
 function spp_st(s, t)::Function
-    fixed_spp(tails, heads, weights, demands, adjlist) = spp(tails, heads, weights, demands, adjlist, s, t)
+    fixed_spp(tails, heads, weights, demands, adjlist, att) = spp(tails, heads, weights, demands, adjlist, s, t)
     return fixed_spp
 end
