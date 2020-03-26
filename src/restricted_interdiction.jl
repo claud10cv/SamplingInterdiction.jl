@@ -971,10 +971,10 @@ function net_restricted_interdict_mip(tails,
         let
             attacked = [e for e in 1 : nedges if xvals[e] > 1e-7]
             new_weights = copy(weights)
-	    newatt = zeros(nedges)
+	        newatt = zeros(nedges)
             for e in attacked
                 new_weights[e] += attacked_weights[e]
-		newatt[e] += 1
+		    newatt[e] += 1
             end
             newlb, mst_edges, nothing = def(tails, heads, new_weights, followercons, [], newatt)
             kl = isempty(attacked) ? 0 : sum(leadercons[e] for e in attacked)
@@ -1026,6 +1026,8 @@ function net_restricted_interdict_mip(tails,
             #     exit(0)
             # end
             if !isnothing(cbatt)
+                println("cbatt = $cbatt")
+                println("optsol = $optsol")
                 push!(sols, cbatt)
                 if optsol.cost < cbatt.cost
                     optsol = cbatt
