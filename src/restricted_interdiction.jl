@@ -1026,8 +1026,8 @@ function net_restricted_interdict_mip(tails,
             #     exit(0)
             # end
             if cbatt != []
-                println("cbatt = $cbatt")
-                println("optsol = $optsol")
+                # println("cbatt = $cbatt")
+                # println("optsol = $optsol")
                 push!(sols, cbatt)
                 if optsol.cost < cbatt.cost
                     optsol = cbatt
