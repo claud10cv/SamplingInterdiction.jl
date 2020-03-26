@@ -29,7 +29,7 @@ report, opt = SamplingInterdiction.sp_interdiction_sampling(tails, heads, cost, 
 ### Facility location interdiction
 ```julia
 nat = :uflp # use :sscflp for single-source facility location with interdiction
-caps = rand(100 : 300, 10)
+caps = rand(100 : 300, 10) # caps are ignored by the algorithm when :uflp is set
 dems = rand(1 : 10, 100)
 fcosts = rand(100 : 200, 10)
 dfcosts = rand(20 : 50, 10)
