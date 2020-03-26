@@ -967,7 +967,7 @@ function net_restricted_interdict_mip(tails,
         end
         bestbound = ub
         # bestbound = min(ub, floor(MathProgBase.cbgetbestbound(cb) + 1e-7))
-        cbatt = nothing
+        cbatt = []
         let
             attacked = [e for e in 1 : nedges if xvals[e] > 1e-7]
             new_weights = copy(weights)
@@ -1025,7 +1025,7 @@ function net_restricted_interdict_mip(tails,
             #     println("infeasible attack in lazy")
             #     exit(0)
             # end
-            if !isnothing(cbatt)
+            if cbatt != []
                 println("cbatt = $cbatt")
                 println("optsol = $optsol")
                 push!(sols, cbatt)
