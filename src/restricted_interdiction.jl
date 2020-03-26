@@ -447,12 +447,12 @@ function net_restricted_interdict_heu(tails,
                                 end
                                 #TEST THE SWAPPING OF THE TWO EDGES
                                 new_weights = copy(weights)
-				newatt = zeros(nedges)
+				                newatt = zeros(nedges)
                                 for i in 1 : length(pivotAttack.attacked)
                                     if i != k
                                         a = i == g ? f : pivotAttack.attacked[i]
                                         new_weights[a] += attacked_weights[a]
-					newatt[a] += 1
+					                    newatt[a] += 1
                                     end
                                 end
 
@@ -860,6 +860,7 @@ function net_restricted_interdict_mip(tails,
                                     # "CPXPARAM_MIP_Tolerances_LowerCutoff" => lb,
                                     # "CPXPARAM_Emphasis_MIP" => 1,
                                     # "CPXPARAM_MIP_Strategy_VariableSelect" => 2,
+                                    "SolutionLimit" => 1,
                                     "OutputFlag" => 0))
     # m = Model(solver = CplexSolver(CPXPARAM_Threads = 1,
     #                                 CPXPARAM_MIP_Tolerances_AbsMIPGap = 0.0,
@@ -921,7 +922,7 @@ function net_restricted_interdict_mip(tails,
         end
         if bestatt != []
             for e in bestatt.attacked
-                setvalue(x[e], 1)
+                set_start_value(x[e], 1)
             end
         end
     end
@@ -967,20 +968,20 @@ function net_restricted_interdict_mip(tails,
         end
         bestbound = ub
         # bestbound = min(ub, floor(MathProgBase.cbgetbestbound(cb) + 1e-7))
-        cbatt = nothing
+        cbatt = []
         let
             attacked = [e for e in 1 : nedges if xvals[e] > 1e-7]
             new_weights = copy(weights)
-	    newatt = zeros(nedges)
+	        newatt = zeros(nedges)
             for e in attacked
                 new_weights[e] += attacked_weights[e]
-		newatt[e] += 1
+		    newatt[e] += 1
             end
             newlb, mst_edges, nothing = def(tails, heads, new_weights, followercons, [], newatt)
             kl = isempty(attacked) ? 0 : sum(leadercons[e] for e in attacked)
             if kl <= budget
-                push!(attacks, Attack(attacked, mst_edges, newlb, lambdaval))
-                cbatt = attacks[end]
+                cbatt = Attack(attacked, mst_edges, newlb, lambdaval)
+                push!(attacks, cbatt)
             end
         end
         let
@@ -1025,7 +1026,9 @@ function net_restricted_interdict_mip(tails,
             #     println("infeasible attack in lazy")
             #     exit(0)
             # end
-            if !isnothing(cbatt)
+            if cbatt != []
+                # println("cbatt = $cbatt")
+                # println("optsol = $optsol")
                 push!(sols, cbatt)
                 if optsol.cost < cbatt.cost
                     optsol = cbatt
