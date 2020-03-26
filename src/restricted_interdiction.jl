@@ -979,8 +979,8 @@ function net_restricted_interdict_mip(tails,
             newlb, mst_edges, nothing = def(tails, heads, new_weights, followercons, [], newatt)
             kl = isempty(attacked) ? 0 : sum(leadercons[e] for e in attacked)
             if kl <= budget
-                push!(attacks, Attack(attacked, mst_edges, newlb, lambdaval))
-                cbatt = attacks[end]
+                cbatt = Attack(attacked, mst_edges, newlb, lambdaval)
+                push!(attacks, cbatt)
             end
         end
         let
