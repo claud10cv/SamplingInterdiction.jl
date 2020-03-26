@@ -140,7 +140,7 @@ function abstract_interdiction_sampling(ptype, tails, heads, weights, leadercons
         bestAttack = Attack([], path, lb, lb)
     end
 
-    println(bestAttack)
+    # println(bestAttack)
     optval, optsol = abstract_iterative_interdiction_sampling(bestAttack,
                                                             tails,
                                                             heads,
@@ -245,6 +245,7 @@ function abstract_iterative_interdiction_sampling(initAttack,
     bestAttack = initAttack
     numits = 0
     firstnew = 1
+    numcuts = 0
     while ub > lb
         numits += 1
         restricted_tails = [tails[e] for e in partial_edges]
@@ -262,7 +263,7 @@ function abstract_iterative_interdiction_sampling(initAttack,
 	    ftime = Dates.now()
         elapsed_time = round(Int64, Dates.value(ftime - init_time) / 100) / 10
         tilim = max_time - elapsed_time
-        newub, sols, opt, newtrees, status = net_restricted_interdict(restricted_tails,
+        newub, sols, opt, newtrees, numnewcuts, status = net_restricted_interdict(restricted_tails,
                                                     restricted_heads,
                                                     restricted_weights,
                                                     restricted_leadercons,
@@ -279,6 +280,7 @@ function abstract_iterative_interdiction_sampling(initAttack,
                                                     tilim)
 
         ub = min(ub, newub)
+        numcuts += numnewcuts
         tokeep = [e for e in 1 : nedges if edge_lower_bounds[e] <= ub]
         sols_full = []
         added_to_alg = false
@@ -396,7 +398,7 @@ function abstract_iterative_interdiction_sampling(initAttack,
         printub = ub < typemax(Int64) ? ub : "inf"
         gap = ub < typemax(Int64) ? round(Int64, (ub - lb) / abs(lb) * 1000) / 10 : "x"
         println("I: $numits\tL: $lb\tU: $printub\tG: $gap\tE: $(length(partial_edges))\tE+: $nedges_added\tT: $elapsed_time")
-        push!(report, (lb, ub, length(partial_edges), elapsed_time))
+        push!(report, (lb, ub, length(partial_edges), numcuts, elapsed_time))
     	if status == :timelimit
     		break
     	end

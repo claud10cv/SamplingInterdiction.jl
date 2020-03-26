@@ -20,6 +20,7 @@ function net_restricted_interdict(tails,
                                 is_symmetric, tilim)
 
     newattacks = []
+    numcuts = 0
     if gParams.heuristic_restricted_interdiction
         newub, newattacks, newopt, newtrees = net_restricted_interdict_heu(tails,
                                                                         heads,
@@ -37,7 +38,7 @@ function net_restricted_interdict(tails,
     end
     if isempty(newattacks)
         gParams.heuristic_restricted_interdiction = false
-        newub, newattacks, newopt, newtrees, status = net_restricted_interdict_binsearch(tails,
+        newub, newattacks, newopt, newtrees, numcuts, status = net_restricted_interdict_binsearch(tails,
                                                                                 heads,
                                                                                 weights,
                                                                                 leadercons,
@@ -52,14 +53,14 @@ function net_restricted_interdict(tails,
                                                                                 def,
                                                                                 is_symmetric, tilim)
     	if status == :timelimit
-    		return newub, newattacks, newopt, newtrees, :timelimit
+    		return newub, newattacks, newopt, newtrees, numcuts, :timelimit
     	elseif isempty(newattacks)
-    		return lb, newattacks, newopt, newtrees, :optimal
+    		return lb, newattacks, newopt, newtrees, numcuts, :optimal
     	else
-                    return newub, newattacks, newopt, newtrees, :feasible
+            return newub, newattacks, newopt, newtrees, numcuts, :feasible
     	end
     else
-        return newub, newattacks, newopt, newtrees, :feasible
+        return newub, newattacks, newopt, newtrees, numcuts, :feasible
     end
 end
 
@@ -380,7 +381,7 @@ function net_restricted_interdict_heu(tails,
                                     new_weights[a] += attacked_weights[a]
 				    newatt[a] += 1
                                 end
-                                if l != f 
+                                if l != f
 					new_weights[l] += attacked_weights[l]
 					newatt[l] += 1
                                 end
@@ -757,18 +758,18 @@ function net_restricted_interdict_binsearch(tails,
             exit(0)
         end
     end
-
+    numcuts = 0
     while lb <= ub
         gap = (ub - lb) / max(abs(ub), abs(lb)) * 100
         if !isempty(newAttacks) && gap < 2
-            return ub, newAttacks, newOpt, newTrees, :feasible
+            return ub, newAttacks, newOpt, newTrees, 0, :feasible
         end
         ftime = Dates.now()
         elapsed_time = round(Int64, Dates.value(ftime - initTime) / 100) / 10
         newtilim = tilim - elapsed_time
         mid = ceil(Int64, (3 * ub + 2 * lb) / 5)
     #    println("bs in range [$lb, $ub]")
-        newub, newattacks, newOpt, newtrees, stat = net_restricted_interdict_mip(tails,
+        newub, newattacks, newOpt, newtrees, numnewcuts, stat = net_restricted_interdict_mip(tails,
                                                                             heads,
                                                                             weights,
                                                                             leadercons,
@@ -783,6 +784,7 @@ function net_restricted_interdict_binsearch(tails,
                                                                             def::Function,
                                                                             is_symmetric, newtilim)
         ftime = Dates.now()
+        numcuts += numnewcuts
         elapsed_time = round(Int64, Dates.value(ftime - initTime) / 100) / 10
         for att in newattacks
             kl = sum(leadercons[e] for e in att.attacked)
@@ -813,7 +815,7 @@ function net_restricted_interdict_binsearch(tails,
             end
         end
     	if stat == :timelimit
-    		return newub, newAttacks, newOpt, newTrees, stat
+    		return newub, newAttacks, newOpt, newTrees, numcuts, stat
     	elseif isempty(newattacks)
         	ub = mid - 1
         else
@@ -821,7 +823,7 @@ function net_restricted_interdict_binsearch(tails,
 	    end
     end
 	stat = isempty(newAttacks) ? :optimal : :feasible
-    return ub, newAttacks, newOpt, newTrees, :stat
+    return ub, newAttacks, newOpt, newTrees, numcuts, :stat
 end
 
 function net_restricted_interdict_mip(tails,
@@ -924,6 +926,7 @@ function net_restricted_interdict_mip(tails,
         end
     end
 
+    numcuts = 0
     let
         newatts = [att for att in attacks if isempty(objectsFitInKnapsack(att.attacked, leadercons, budget))]
         svi = separate_super_valid_inequalities(newatts,
@@ -1005,6 +1008,7 @@ function net_restricted_interdict_mip(tails,
                 newlazy = @build_constraint(lcoef * lambda + JuMP.dot(x, xcoefs) <= rhs)
                 # print("adding cut...")
                 MOI.submit(m, MOI.LazyConstraint(cb), newlazy)
+                numcuts += 1
                 # println("done!")
             end
             for t in newtrees
@@ -1068,6 +1072,7 @@ function net_restricted_interdict_mip(tails,
                 newcut = @build_constraint(acut.lambda_coef * lambda + JuMP.dot(x, acut.edge_coefs) <= acut.rhs)
                 # @usercut(cb, acut.lambda_coef * lambda + JuMP.dot(x, acut.edge_coefs) <= acut.rhs)
                 MOI.submit(m, MOI.UserCut(cb), newcut)
+                numcuts += 1
                 foundcuts = true
             end
         end
@@ -1100,6 +1105,7 @@ function net_restricted_interdict_mip(tails,
                     newcut = @build_constraint(sum(x[e] for e in mstedges) >= b)
                     # @usercut(cb, sum(x[e] for e in mstedges) >= b)
                     MOI.submit(m, MOI.UserCut(cb), newcut)
+                    numcuts += 1
                     foundcuts = true
                 end
             end
@@ -1125,6 +1131,7 @@ function net_restricted_interdict_mip(tails,
                 newcut = @build_constraint(lcoef * lambda + JuMP.dot(x, xcoefs) <= rhs)
                 # @usercut(cb, lcoef * lambda + JuMP.dot(x, xcoefs) <= rhs)
                 MOI.submit(m, MOI.UserCut(cb), newcut)
+                numcuts += 1
                 foundcuts = true
             end
         end
@@ -1239,7 +1246,7 @@ function net_restricted_interdict_mip(tails,
     # println("optsol = $optsol")
     # println("newtrees = $newTrees")
     # println("stat = $stat")
-	objbound, sols, optsol, newTrees, stat
+	objbound, sols, optsol, newTrees, numcuts, stat
 end
 function separate_benders_cuts(tails,
                                 heads,
