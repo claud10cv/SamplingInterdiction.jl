@@ -447,12 +447,12 @@ function net_restricted_interdict_heu(tails,
                                 end
                                 #TEST THE SWAPPING OF THE TWO EDGES
                                 new_weights = copy(weights)
-				newatt = zeros(nedges)
+				                newatt = zeros(nedges)
                                 for i in 1 : length(pivotAttack.attacked)
                                     if i != k
                                         a = i == g ? f : pivotAttack.attacked[i]
                                         new_weights[a] += attacked_weights[a]
-					newatt[a] += 1
+					                    newatt[a] += 1
                                     end
                                 end
 
@@ -860,6 +860,7 @@ function net_restricted_interdict_mip(tails,
                                     # "CPXPARAM_MIP_Tolerances_LowerCutoff" => lb,
                                     # "CPXPARAM_Emphasis_MIP" => 1,
                                     # "CPXPARAM_MIP_Strategy_VariableSelect" => 2,
+                                    "SolutionLimit" => 1,
                                     "OutputFlag" => 0))
     # m = Model(solver = CplexSolver(CPXPARAM_Threads = 1,
     #                                 CPXPARAM_MIP_Tolerances_AbsMIPGap = 0.0,
