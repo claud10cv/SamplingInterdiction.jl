@@ -921,7 +921,7 @@ function net_restricted_interdict_mip(tails,
         end
         if bestatt != []
             for e in bestatt.attacked
-                setvalue(x[e], 1)
+                set_start_value(x[e], 1)
             end
         end
     end
