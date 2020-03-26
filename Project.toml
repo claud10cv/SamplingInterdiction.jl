@@ -19,3 +19,4 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 DataStructures = "0.17"
+LightGraphsFlows = "0.4"
