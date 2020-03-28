@@ -857,6 +857,7 @@ function net_restricted_interdict_mip(tails,
                                     "MIPGapAbs" => 0.0,
                                     "MIPGap" => 0.0,
                                     "Cutoff" => lb - 1e-7,
+				    "TimeLimit" => 1.01 * tilim,
                                     # "CPXPARAM_MIP_Tolerances_LowerCutoff" => lb,
                                     # "CPXPARAM_Emphasis_MIP" => 1,
                                     # "CPXPARAM_MIP_Strategy_VariableSelect" => 2,
@@ -1207,6 +1208,8 @@ function net_restricted_interdict_mip(tails,
         # println("has values = $(has_values(m))")
 		objbound = lb - 1
 		stat = :optimal
+	elseif in(term_status, [MOI.TIME_LIMIT])
+		stat = :timelimit
 	else
         # println(term_status)
         optx = round.(Int64, value.(x))
