@@ -910,7 +910,7 @@ function net_restricted_interdict_mip(tails,
                 if newlb >= ub
                     sols = [att]
                     println("solution will not change")
-                    return ub, sols, att, [], :feasible
+                    return ub, sols, att, [], 0, :feasible
                 elseif newlb < lb
                     xcoefs = [in(e, att.attacked) ? 1 : 0 for e in 1 : nedges]
                     push!(attackCuts, AttackCut(0, xcoefs, length(xcoefs) - 1))
