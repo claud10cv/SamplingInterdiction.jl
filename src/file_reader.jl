@@ -317,7 +317,7 @@ function knapsack_mibs_file_reader(mpsfilename, auxfilename)
     budget = 0
     open(auxfilename) do f
         for line in eachline(f)
-            token = split(line, " "; keep = false)
+            token = split(line, " "; keepempty = false)
             lt = token[1]
             if lt == "N"
                 nnodes = parse(Int64, token[2])
@@ -329,7 +329,7 @@ function knapsack_mibs_file_reader(mpsfilename, auxfilename)
     end
     open(mpsfilename) do f
         for line in eachline(f)
-            token = split(line, " "; keep = false)
+            token = split(line, " "; keepempty = false)
             println(token)
             lt = token[1]
             if lt[1] == 'y' && token[2]  == "KF"
@@ -343,6 +343,47 @@ function knapsack_mibs_file_reader(mpsfilename, auxfilename)
     end
     attacked = copy(vals)
     vals, attacked, demands, cap, budget
+end
+
+function knapsack_Dinsts_file_reader(mpsfilename, auxfilename)
+    nnodes = 0
+    vals = Int64[]
+    cap = 0
+    budget = 0
+    fcons = Int64[]
+    lcons = Int64[]
+    open(auxfilename) do f
+        for line in eachline(f)
+            token = split(line, " "; keepempty = false)
+            lt = token[1]
+            if lt == "N"
+                nnodes = parse(Int64, token[2])
+            elseif lt == "LO"
+                weight = -parse(Int64, token[2])
+                push!(vals, weight)
+            end
+        end
+    end
+    open(mpsfilename) do f
+        for line in eachline(f)
+            token = split(line, " "; keepempty = false)
+            println(token)
+            lt = token[1]
+            if size(token, 1) >= 2
+                if lt[1] == 'C' && token[2] == "R0000000"
+                    push!(fcons, parse(Int64, token[3]))
+                elseif lt[1] == 'x' && token[2] == "interdictionBudget"
+                    push!(lcons, parse(Int64, token[3]))
+                elseif lt == "rhs" && token[2] == "R0000000"
+                    cap = parse(Int64, token[3])
+                elseif lt == "rhs" && token[2] == "interdictionBudget"
+                    budget = parse(Int64, token[3])
+                end
+            end
+        end
+    end
+    attacked = copy(vals)
+    vals, attacked, fcons, lcons, cap, budget
 end
 
 function knapsack_coral_file_reader(mpsfilename, auxfilename)
