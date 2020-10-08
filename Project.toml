@@ -18,7 +18,7 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 DataStructures = "0.17"
-Distributions = "0.23"
+Distributions = "0.23, 0.24"
 Gurobi = "0.7, 0.8"
 JuMP = "0.21"
 LightGraphs = "1.3"
