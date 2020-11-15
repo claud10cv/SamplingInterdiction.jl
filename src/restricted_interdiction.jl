@@ -542,7 +542,7 @@ function performShake(attack, cands, tails, heads, weights, leadercons, follower
     numshakes = minimum([numshakes, length(attacked), length(nonattacked)])
     toswap = collect(1 : length(attacked))
     nshake = 0
-    cons = sum(leadercons[e] for e in attacked)
+    cons = isempty(attacked) ? 0 : sum(leadercons[e] for e in attacked)
     while nshake < numshakes
         feas = false
         i = e = 0

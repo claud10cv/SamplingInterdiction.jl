@@ -112,7 +112,17 @@ function bipartite_matching_interdiction_sampling(tails, heads, weights, attacke
                                         is_symmetric = true)
 end
 
-function abstract_interdiction_sampling(ptype, tails, heads, weights, leadercons, followercons, attacked_weights, budget, max_time, def::Function; is_symmetric = true)
+function abstract_interdiction_sampling(ptype,
+                                        tails,
+                                        heads,
+                                        weights,
+                                        leadercons,
+                                        followercons,
+                                        attacked_weights,
+                                        budget,
+                                        max_time,
+                                        def::Function; 
+                                        is_symmetric = true)
 #    srand(rng, 20170901)
     Random.seed!(gParams.rng, 20170901)
     gParams.heuristic_restricted_interdiction = true
