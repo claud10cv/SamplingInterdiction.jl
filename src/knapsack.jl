@@ -1,5 +1,6 @@
 using JuMP
 using Gurobi#, CPLEX
+using PisingerKnapsack
 
 function knapsack_demcap(cap)::Function
     fixed_knapsack(tails, heads, weights, demands, adjlist, attack) = knapsack(tails, heads, weights, demands, adjlist, attack, cap)
@@ -27,6 +28,7 @@ function knapsack(tails, heads, weights, demands, adjlist, attack, cap)
     -optval, chosen, []
 end
 function knapsack(vals, demands, cap)
+	return knapsack_minknap(vals, demands, cap)
     ram_dp = (length(vals) + 1) * (cap + 1) * sizeof(Float64) * 1e-6
     if ram_dp >= 1024
 #	println("running mip")
@@ -35,6 +37,21 @@ function knapsack(vals, demands, cap)
 #	println("running dp")
         return knapsack_dp(vals, demands, cap)
     end
+end
+
+function knapsack_minknap(vals, demands, cap)
+	nitems = length(vals)
+#	println(vals)
+#	println(demands)
+#	println(cap)
+	sumdem = sum(demands)
+	if sumdem <= cap
+		return sum(vals), [i for i in 1 : nitems]
+	else
+		obj, sol = minknap(vals, demands, cap)
+		chosen = [i for i in 1 : nitems if sol[i] == 1]
+		obj, chosen 
+	end
 end
 
 function knapsack_mip(vals, demands, cap)

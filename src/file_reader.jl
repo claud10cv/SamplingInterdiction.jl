@@ -395,7 +395,7 @@ function knapsack_coral_file_reader(mpsfilename, auxfilename)
     budget = 0
     open(auxfilename) do f
         for line in eachline(f)
-            token = split(line, [' ', '.']; keep = false)
+            token = split(line, [' ', '.']; keepempty = false)
             lt = token[1]
             if lt == "IC"
                 v = parse(Int64, token[2])
@@ -409,7 +409,7 @@ function knapsack_coral_file_reader(mpsfilename, auxfilename)
     end
     open(mpsfilename) do f
         for line in eachline(f)
-            token = split(line, [' ', '.']; keep = false)
+            token = split(line, [' ', '.']; keepempty = false)
             println(token)
             lt = token[1]
             if length(lt) >= 3 && SubString(lt, 1, 3) == "C00"
