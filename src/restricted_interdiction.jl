@@ -767,7 +767,7 @@ function net_restricted_interdict_binsearch(tails,
         ftime = Dates.now()
         elapsed_time = round(Int64, Dates.value(ftime - initTime) / 100) / 10
         newtilim = tilim - elapsed_time
-        mid = ceil(Int64, (2 * ub + lb) / 3)
+        mid = ceil(Int64, (ub + lb) / 2)
     #    println("bs in range [$lb, $ub]")
         newub, newattacks, newOpt, newtrees, numnewcuts, stat = net_restricted_interdict_mip(tails,
                                                                             heads,

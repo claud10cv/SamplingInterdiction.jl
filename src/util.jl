@@ -14,6 +14,25 @@ function build_adj_lists(tails, heads, is_symmetric::Bool)
     adjlist
 end
 
+function compute_sample_dominance_knapsack(fcons, lcons, vals, attacks)
+    nitems = length(fcons)
+    vec = shuffle(collect(1 : nitems))
+    # vec = vec[1 : 1000]
+    isdom = falses(nitems)
+    for u in vec, v in vec
+        if u == v continue
+        elseif isdom[u] continue
+        elseif isdom[v] continue
+        end
+        if fcons[u] > fcons[v] continue
+        elseif lcons[u] > lcons[v] continue
+        elseif vals[u] - attacks[u] < vals[v] continue
+        end
+        isdom[v] = true
+    end
+    sum(isdom), length(isdom)
+end
+
 function build_cost_matrix(tails, heads, weights, is_symmetric::Bool)
     nnodes = max(maximum(tails), maximum(heads))
     nedges = length(tails)
