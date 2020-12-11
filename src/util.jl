@@ -23,9 +23,9 @@ function compute_sample_dominance_knapsack(fcons, lcons, vals, attacks)
         if u == v continue
         elseif isdom[u] continue
         elseif isdom[v] continue
-        end
-        if fcons[u] > fcons[v] continue
+        elseif fcons[u] > fcons[v] continue
         elseif lcons[u] > lcons[v] continue
+        elseif attacks[u] < attacks[v] continue
         elseif vals[u] - attacks[u] < vals[v] continue
         end
         isdom[v] = true
