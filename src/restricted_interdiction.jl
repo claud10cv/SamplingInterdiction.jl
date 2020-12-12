@@ -17,7 +17,7 @@ function net_restricted_interdict(tails,
                                 ub,
                                 attacks,
                                 def::Function,
-                                is_symmetric, tilim)
+                                is_symmetric, tilim, knapdom)
 
     newattacks = []
     numcuts = 0
@@ -51,7 +51,7 @@ function net_restricted_interdict(tails,
                                                                                 ub,
                                                                                 attacks,
                                                                                 def,
-                                                                                is_symmetric, tilim)
+                                                                                is_symmetric, tilim, knapdom)
     	if status == :timelimit
     		return newub, newattacks, newopt, newtrees, numcuts, :timelimit
     	elseif isempty(newattacks)
@@ -743,7 +743,7 @@ function net_restricted_interdict_binsearch(tails,
                                     ub,
                                     attacks,
                                     def::Function,
-                                    is_symmetric, tilim)
+                                    is_symmetric, tilim, knapdom)
 
     newAttacks = []
     newTrees = []
@@ -782,7 +782,7 @@ function net_restricted_interdict_binsearch(tails,
                                                                             ub,
                                                                             currAttacks,
                                                                             def::Function,
-                                                                            is_symmetric, newtilim)
+                                                                            is_symmetric, newtilim, knapdom)
         ftime = Dates.now()
         numcuts += numnewcuts
         elapsed_time = round(Int64, Dates.value(ftime - initTime) / 100) / 10
@@ -839,7 +839,7 @@ function net_restricted_interdict_mip(tails,
                                     ub,
                                     attacks,
                                     def::Function,
-                                    is_symmetric, tilim)
+                                    is_symmetric, tilim, knapdom)
 	init_time = Dates.now()
     nnodes = max(maximum(tails), maximum(heads))
     nedges = length(tails)
@@ -888,17 +888,20 @@ function net_restricted_interdict_mip(tails,
     @objective(m, Max, lambda)
     @constraint(m, JuMP.dot(leadercons, x) <= budget)
 
-# ONLY FOR KNAPSACK, PLEASE COMMENT WHEN OTHER PROBLEM IS SOLVED
-    for e in 1 : nedges, f in 1 : nedges
-        if e == f continue
-        elseif leadercons[e] > leadercons[f] continue
-        elseif followercons[e] > followercons[f] continue
-        elseif weights[e] + attacked_weights[e] > weights[f] continue
-        elseif attacked_weights[e] < attacked_weights[f] continue
+    if knapdom
+        numdoms = 0
+        for e in 1 : nedges, f in 1 : nedges
+            if e == f continue
+            elseif leadercons[e] > leadercons[f] continue
+            elseif followercons[e] > followercons[f] continue
+            elseif weights[e] + attacked_weights[e] > weights[f] continue
+            elseif attacked_weights[e] < attacked_weights[f] continue
+            end
+            numdoms += 1
+            @constraint(m, x[e] >= x[f])
         end
-        @constraint(m, x[e] >= x[f])
+        # println("added $numdoms dominance cuts")
     end
-#
 
     rlb = lb
     attackCuts = AttackCut[]

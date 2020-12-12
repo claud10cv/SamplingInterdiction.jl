@@ -48,7 +48,7 @@ function cflp_interdiction_sampling(xnat, caps, dems, fcosts, attfcosts, asscost
                                         is_symmetric = true)
 end
 
-function knapsack_interdiction_sampling(vals, att_vals, leadercons, followercons, cap, budget; max_time = 604800)
+function knapsack_interdiction_sampling(vals, att_vals, leadercons, followercons, cap, budget; max_time = 604800, with_knapdom = false)
     nnodes = length(vals)
     tails = ones(Int64, nnodes)
     heads = collect(1 : nnodes)
@@ -62,7 +62,8 @@ function knapsack_interdiction_sampling(vals, att_vals, leadercons, followercons
                                         budget,
                                         max_time,
                                         knapsack_demcap(cap);
-                                        is_symmetric = true)
+                                        is_symmetric = true,
+                                        with_knapdom = with_knapdom)
 end
 function sp_interdiction_sampling(tails, heads, weights, attacked_weights, leadercons, budget, s, t; max_time = 604800)
     nedges = length(tails)
@@ -121,8 +122,9 @@ function abstract_interdiction_sampling(ptype,
                                         attacked_weights,
                                         budget,
                                         max_time,
-                                        def::Function; 
-                                        is_symmetric = true)
+                                        def::Function;
+                                        is_symmetric = true,
+                                        with_knapdom = false)
 #    srand(rng, 20170901)
     Random.seed!(gParams.rng, 20170901)
     gParams.heuristic_restricted_interdiction = true
@@ -162,7 +164,8 @@ function abstract_interdiction_sampling(ptype,
                                                             max_time,
                                                             def,
                                                             edge_lower_bounds,
-                                                            is_symmetric)
+                                                            is_symmetric,
+                                                            with_knapdom)
 
 end
 
@@ -177,7 +180,8 @@ function abstract_iterative_interdiction_sampling(initAttack,
                                                     max_time,
                                                     def,
                                                     edge_lower_bounds,
-                                                    is_symmetric)
+                                                    is_symmetric,
+                                                    with_knapdom)
 
     init_time = Dates.now()
     nnodes = max(maximum(tails), maximum(heads))
@@ -287,7 +291,8 @@ function abstract_iterative_interdiction_sampling(initAttack,
                                                     attacks,
                                                     def,
                                                     is_symmetric,
-                                                    tilim)
+                                                    tilim,
+                                                    with_knapdom)
 
         ub = min(ub, newub)
         numcuts += numnewcuts
