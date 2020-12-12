@@ -888,6 +888,18 @@ function net_restricted_interdict_mip(tails,
     @objective(m, Max, lambda)
     @constraint(m, JuMP.dot(leadercons, x) <= budget)
 
+# ONLY FOR KNAPSACK, PLEASE COMMENT WHEN OTHER PROBLEM IS SOLVED
+    for e in 1 : nedges, f in 1 : nedges
+        if e == f continue
+        elseif leadercons[e] > leadercons[f] continue
+        elseif followercons[e] > followercons[f] continue
+        elseif weights[e] + attacked_weights[e] > weights[f] continue
+        elseif attacked_weights[e] < attacked_weights[f] continue
+        end
+        @constraint(m, x[e] >= x[f])
+    end
+############################################################
+
     rlb = lb
     attackCuts = AttackCut[]
     let
